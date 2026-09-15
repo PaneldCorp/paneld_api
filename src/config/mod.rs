@@ -1,3 +1,4 @@
 pub mod database;
 pub mod error;
-mod error_kind;
+pub mod error_kind;
+pub mod services;

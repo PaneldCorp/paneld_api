@@ -1,6 +1,13 @@
 #[derive(thiserror::Error, Debug)]
 #[error("...")]
-pub enum DatabaseError {}
+pub enum DatabaseError
+{
+    #[error("The row {0} isn't find...")]
+    RowNotFound(String),
+
+    #[error("{0}")]
+    Unvalid(String)
+}
 
 #[derive(thiserror::Error, Debug)]
 #[error("...")]

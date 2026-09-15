@@ -66,5 +66,15 @@ impl Error
         let error_response = ErrorResponse { code, message };
         HttpResponse::build(status_code).json(error_response)
     }
+
+    pub fn from_sqlx_error(err: sqlx::Error) -> Self
+    {
+        match err
+        {
+
+            sqlx::Error::RowNotFound => Error::Database(DatabaseError::RowNotFound(err.to_string())),
+            _ => Error::Database(DatabaseError::Unvalid(err.to_string()))
+        }
+    }
 }
 
