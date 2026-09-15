@@ -5,11 +5,12 @@ use std::{
 };
 use sqlx::postgres::{PgPool, PgConnectOptions, PgPoolOptions};
 
+#[derive(Clone)]
 pub struct Database
 {
     host: String,
     port: String,
-    pool: PgPool
+    pub pool: PgPool
 }
 
 impl Database
