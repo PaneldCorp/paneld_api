@@ -3,13 +3,16 @@ use super::error_kind::*;
 use serde::{Serialize, Deserialize};
 use actix_web::{
     http::StatusCode,
-    HttpResponse
+    HttpResponse,
 };
 
 #[derive(thiserror::Error, Debug)]
 #[error("...")]
 pub enum Error
 {
+    #[error("OK !")]
+    OK,
+
     #[error("{0}")]
     Authenticate(#[from] AuthenticateError),
 
@@ -24,10 +27,11 @@ pub enum Error
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct ErrorResponse
+pub struct ErrorResponse<T: Serialize>
 {
     code: u16,
-    message: String
+    message: String,
+    data: Option<T>
 }
 
 impl Error
@@ -36,6 +40,9 @@ impl Error
     {
         match *self
         {
+            // 2xx errors
+            Error::OK => (StatusCode::OK, 200),
+
             // 4xx errors
             Error::BadRequest(_) => (StatusCode::BAD_REQUEST, 403),
             Error::NotFound(_) => (StatusCode::NOT_FOUND, 404),
@@ -59,11 +66,12 @@ impl Error
         Error::NotFound(NotFound { element })
     }
 
-    pub fn error_response(&self) -> HttpResponse
+    pub fn error_response<T>(&self, data: Option<T>) -> HttpResponse
+        where T: Serialize
     {
         let (status_code, code) = self.get_codes();
         let message = self.to_string();
-        let error_response = ErrorResponse { code, message };
+        let error_response = ErrorResponse { code, message, data };
         HttpResponse::build(status_code).json(error_response)
     }
 
@@ -77,4 +85,3 @@ impl Error
         }
     }
 }
-
