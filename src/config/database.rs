@@ -3,7 +3,7 @@ use std::{
     time::Duration,
     env
 };
-use sqlx::postgres::{PgPool, PgConnectOptions, PgPoolOptions};
+use sqlx::postgres::{PgPool, PgPoolOptions};
 
 #[derive(Clone)]
 pub struct Database
