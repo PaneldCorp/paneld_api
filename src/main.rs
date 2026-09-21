@@ -17,6 +17,8 @@ mod config;
 mod models;
 mod services;
 mod repositories;
+mod handlers;
+mod routes;
 mod utils;
 
 pub struct AppState
@@ -28,7 +30,7 @@ pub struct AppState
 async fn main() -> std::io::Result<()> {
     let database = Database::init().await;
     let services = Services::new(database.clone().pool);
-    let app_state = Data::new(services);
+    let app_state = Data::new(AppState{ services });
 
     log(Level::Info, format!("API serveur running on http://{}.", database.get_binding()).as_str());
 
@@ -36,6 +38,7 @@ async fn main() -> std::io::Result<()> {
         {
             App::new()
                 .app_data(app_state.clone())
+                .configure(routes::author_routes::config)
         }
     )
     .bind(database.get_binding())?
